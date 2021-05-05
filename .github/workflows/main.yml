@@ -38,11 +38,9 @@ jobs:
           iex ${{ env.Qt5_Dir }}/bin/qmake.exe
           make
       - name: MemCheck
-        run: |
-          mkdir ${{ github.workspace }}/drmemory
-          cd ${{ github.workspace }}/drmemory
-          curl -o mem.zip https://github.com/DynamoRIO/drmemory/releases/download/release_2.3.0/DrMemory-Windows-2.3.0-1.zip
-          tar -xf mem.zip
-          del mem.zip
-          cd DrMemory-Windows-2.3.0-1/bin
-          drmemory.exe ${{ github.workspace }}/release/cursormover.exe
+      - run: mkdir ${{ github.workspace }}/drmemory
+      - run: cd ${{ github.workspace }}/drmemory
+      - run: curl -o mem.zip https://github.com/DynamoRIO/drmemory/releases/download/release_2.3.0/DrMemory-Windows-2.3.0-1.zip
+      - run: tar -xf mem.zip
+      - run: cd DrMemory-Windows-2.3.0-1/bin
+      - run: drmemory.exe ${{ github.workspace }}/release/cursormover.exe
