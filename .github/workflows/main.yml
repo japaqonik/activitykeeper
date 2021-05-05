@@ -36,4 +36,4 @@ jobs:
       - name: Build
         run: |
           $Qt5_DIR/bin/qmake
-          make release
+          make
