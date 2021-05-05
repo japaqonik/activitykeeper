@@ -35,6 +35,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Build
         run: |
-          $Qt5_Dir
+          Get-Variable Qt5_Dir
           Start-Process $Qt5_Dir\bin\qmake.exe
           make
