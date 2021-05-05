@@ -36,5 +36,5 @@ jobs:
       - name: Build
         run: |
           echo "${{ env.Qt5_Dir }}"
-          iex $Qt5_Dir\bin\qmake.exe
+          iex ${{ env.Qt5_Dir }}\bin\qmake.exe
           make
