@@ -13,14 +13,14 @@
 class MainDialog: public QDialog
 {
 public:
-    MainDialog(ConfigHandler *_cfgHandler, QWidget *parent = nullptr);
+    MainDialog(IConfigHandler *_cfgHandler, IMouseMover *_mouseMover, QWidget *parent = nullptr);
 
 private:
     QLabel * sliderLabel;
     QSlider * timeSlider;
     QTimer timer;
-    MouseMover mouseMover;
-    ConfigHandler *cfgHandler;
+    IMouseMover *mouseMover;
+    IConfigHandler *cfgHandler;
     void onCheckBoxStateChange(int state);
     void onSliderValueChange(int value);
     void onTimerTimeout();

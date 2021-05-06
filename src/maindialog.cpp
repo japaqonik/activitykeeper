@@ -6,24 +6,28 @@
 #include <iostream>
 
 
-MainDialog::MainDialog(ConfigHandler *_cfgHandler, QWidget *parent) : QDialog(parent), cfgHandler(_cfgHandler)
+MainDialog::MainDialog(IConfigHandler *_cfgHandler, IMouseMover *_mouseMover, QWidget *parent) : QDialog{parent}, mouseMover{_mouseMover}, cfgHandler{_cfgHandler}
 {
     auto checkStateToSet = Qt::Checked;
     auto timeSliderValue = 30;
-    if(cfgHandler->configFileExists())
+    const auto config = cfgHandler->getConfig();
+    if(config)
     {
-        checkStateToSet = cfgHandler->getEnabled() ? Qt::Checked : Qt::Unchecked;
-        timeSliderValue = cfgHandler->getTimerValue();
+        checkStateToSet = static_cast<Qt::CheckState>(config->enabled);
+        timeSliderValue = config->timerValue;
     }
     else
     {
-        cfgHandler->setEnabled(true);
-        cfgHandler->setTimerValue(timeSliderValue);
+        Config cfg;
+        cfg.enabled = checkStateToSet;
+        cfg.timerValue = timeSliderValue;
+        cfgHandler->setConfig(cfg);
     }
+
     setWindowTitle("Cursor mover");
-    setFixedSize(250, 100);
-    setWindowIcon(QIcon(":icons/mouse.png"));
-    setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    setFixedSize(180, 100);
+    setWindowIcon(QIcon(":icons/icon.ico"));
+    setWindowFlags(Qt::WindowCloseButtonHint);
 
     auto layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
 
@@ -35,10 +39,10 @@ MainDialog::MainDialog(ConfigHandler *_cfgHandler, QWidget *parent) : QDialog(pa
 
     timeSlider = new QSlider(Qt::Horizontal, this);
     timeSlider->setRange(1, 60);
-    timeSlider->setFixedSize(230, 20);
+    timeSlider->setFixedSize(160, 20);
     timeSlider->setTickPosition(QSlider::TicksBelow);
     timeSlider->setTickInterval(5);
-    timeSlider->setSingleStep(5);
+    timeSlider->setSingleStep(1);
     timeSlider->setValue(timeSliderValue);
     connect(timeSlider, &QSlider::valueChanged, this, &MainDialog::onSliderValueChange);
     layout->addWidget(timeSlider, 0, Qt::AlignCenter);
@@ -60,7 +64,6 @@ void MainDialog::onCheckBoxStateChange(int state)
         {
             timer.start();
         }
-        cfgHandler->setEnabled(true);
     }
     else if(state == Qt::Unchecked)
     {
@@ -68,8 +71,11 @@ void MainDialog::onCheckBoxStateChange(int state)
         {
             timer.stop();
         }
-        cfgHandler->setEnabled(false);
     }
+
+    auto config = *cfgHandler->getConfig();
+    config.enabled = state;
+    cfgHandler->setConfig(config);
 }
 
 void MainDialog::onSliderValueChange(int value)
@@ -78,7 +84,9 @@ void MainDialog::onSliderValueChange(int value)
 
     updateTimer(value);
 
-    cfgHandler->setTimerValue(value);
+    auto config = *cfgHandler->getConfig();
+    config.timerValue = value;
+    cfgHandler->setConfig(config);
 }
 
 void MainDialog::updateTimer(int newValue)
@@ -89,7 +97,7 @@ void MainDialog::updateTimer(int newValue)
 
 void MainDialog::onTimerTimeout()
 {
-    mouseMover.jump();
+    mouseMover->jump();
 }
 
 void MainDialog::closeEvent(QCloseEvent *e)

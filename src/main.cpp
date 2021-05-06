@@ -3,18 +3,25 @@
 #include <QDialog>
 #include <QImageReader>
 #include <iostream>
+#include "configwriter.h"
+#include "mousehandler.h"
 #include "systemtrayicon.h"
 #include "confighandler.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
     QWidget w;
-    ConfigHandler cfgHandler;
+
+    ConfigWriter configWriter;
+    ConfigHandler cfgHandler{&configWriter};
     cfgHandler.importConfig();
-    MainDialog mainDialog{&cfgHandler};
-    SystemTrayIcon trayIcon(QIcon(":icons/mouse.png"), &w, &mainDialog);
+
+    MouseHandler mouseHandler;
+    MouseMover mouseMover{&mouseHandler};
+
+    MainDialog mainDialog{&cfgHandler, &mouseMover};
+    SystemTrayIcon trayIcon(QIcon(":icons/icon.ico"), &w, &mainDialog);
     trayIcon.show();
     mainDialog.show();
 
