@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <memory>
 #include "confighandler.h"
 
 ConfigHandler::ConfigHandler(IConfigWriter * _configWriter) : configWriter{_configWriter}
