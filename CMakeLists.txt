@@ -20,14 +20,6 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/rsc)
 
 set(PROJECT_SOURCES
-            src/main.cpp
-            src/confighandler.cpp
-            src/maindialog.cpp
-            src/mousemover.cpp
-            src/systemtrayicon.cpp
-            src/configwriter.cpp
-            src/mousehandler.cpp
-
             inc/binfilehandler.h
             inc/confighandler.h
             inc/maindialog.h
@@ -42,6 +34,14 @@ set(PROJECT_SOURCES
             if/imousehandler.h
             if/iconfighandler.h
             if/imousemover.h
+
+            src/main.cpp
+            src/confighandler.cpp
+            src/maindialog.cpp
+            src/mousemover.cpp
+            src/systemtrayicon.cpp
+            src/configwriter.cpp
+            src/mousehandler.cpp
 
             rsc/icon.qrc
 )
