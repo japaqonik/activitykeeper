@@ -1,103 +1,79 @@
 #include "maindialog.h"
 #include <QIcon>
-#include <QLayout>
 #include <QCloseEvent>
 #include <chrono>
-#include <iostream>
 
-
-MainDialog::MainDialog(IConfigHandler *_cfgHandler, IMouseMover *_mouseMover, QWidget *parent) : QDialog{parent}, mouseMover{_mouseMover}, cfgHandler{_cfgHandler}
+MainDialog::MainDialog() : QDialog{}
 {
-    auto checkStateToSet = Qt::Checked;
-    auto timeSliderValue = 30;
-    const auto config = cfgHandler->getConfig();
-    if(config)
-    {
-        checkStateToSet = static_cast<Qt::CheckState>(config->enabled);
-        timeSliderValue = config->timerValue;
-    }
-    else
-    {
-        Config cfg;
-        cfg.enabled = checkStateToSet;
-        cfg.timerValue = timeSliderValue;
-        cfgHandler->setConfig(cfg);
-    }
-
-    setWindowTitle("Cursor mover");
+    setWindowTitle("Activity keeper");
     setFixedSize(180, 100);
     setWindowIcon(QIcon(":icons/icon.ico"));
     setWindowFlags(Qt::WindowCloseButtonHint);
 
-    auto layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    layout = std::unique_ptr<QBoxLayout>(new QBoxLayout(QBoxLayout::TopToBottom, this));
 
-    auto checkBox = new QCheckBox("Enabled");
+    enabledCheckBox = std::unique_ptr<QCheckBox>(new QCheckBox("Enabled"));
+    layout->addWidget(enabledCheckBox.get(), 0, Qt::AlignCenter);
 
-    checkBox->setCheckState(checkStateToSet);
-    connect(checkBox, &QCheckBox::stateChanged, this, &MainDialog::onCheckBoxStateChange);
-    layout->addWidget(checkBox, 0, Qt::AlignCenter);
+    shadowCheckBox = std::unique_ptr<QCheckBox>(new QCheckBox("Shadow moves"));
+    layout->addWidget(shadowCheckBox.get(), 0, Qt::AlignCenter);
 
-    timeSlider = new QSlider(Qt::Horizontal, this);
+    timeSlider = std::unique_ptr<QSlider>(new QSlider(Qt::Horizontal));
     timeSlider->setRange(1, 60);
     timeSlider->setFixedSize(160, 20);
     timeSlider->setTickPosition(QSlider::TicksBelow);
     timeSlider->setTickInterval(5);
     timeSlider->setSingleStep(1);
-    timeSlider->setValue(timeSliderValue);
-    connect(timeSlider, &QSlider::valueChanged, this, &MainDialog::onSliderValueChange);
-    layout->addWidget(timeSlider, 0, Qt::AlignCenter);
+    layout->addWidget(timeSlider.get(), 0, Qt::AlignCenter);
 
-    sliderLabel = new QLabel();
-    sliderLabel->setText(QString::fromStdString(std::to_string(timeSlider->value())) + "s");
-    layout->addWidget(sliderLabel, 0, Qt::AlignCenter);
+    sliderLabel = std::unique_ptr<QLabel>(new QLabel());
+    layout->addWidget(sliderLabel.get(), 0, Qt::AlignCenter);
 
-    connect(&timer, &QTimer::timeout, this, &MainDialog::onTimerTimeout);
-    updateTimer(timeSlider->value());
-    timer.start();
+    timer = std::unique_ptr<QTimer>(new QTimer());
 }
 
-void MainDialog::onCheckBoxStateChange(int state)
+void MainDialog::setEnabledStateChangeAction(std::function<void (int)> action)
 {
-    if(state == Qt::Checked)
-    {
-        if(!timer.isActive())
-        {
-            timer.start();
-        }
-    }
-    else if(state == Qt::Unchecked)
-    {
-        if(timer.isActive())
-        {
-            timer.stop();
-        }
-    }
+    enabledStateChangeAction = action;
+    connect(enabledCheckBox.get(), &QCheckBox::stateChanged, this, &MainDialog::onEnabledCheckBoxStateChange);
+}
 
-    auto config = *cfgHandler->getConfig();
-    config.enabled = state;
-    cfgHandler->setConfig(config);
+void MainDialog::onEnabledCheckBoxStateChange(int state)
+{
+    enabledStateChangeAction(state);
+}
+
+void MainDialog::setShadowStateChangeAction(std::function<void (int)> action)
+{
+    shadowStateChangeAction = action;
+    connect(shadowCheckBox.get(), &QCheckBox::stateChanged, this, &MainDialog::onShadowCheckBoxStateChange);
+}
+
+void MainDialog::onShadowCheckBoxStateChange(int state)
+{
+    shadowStateChangeAction(state);
+}
+
+void MainDialog::setSliderChangeAction(std::function<void (int)> action)
+{
+    sliderChangeAction = action;
+    connect(timeSlider.get(), &QSlider::valueChanged, this, &MainDialog::onSliderValueChange);
 }
 
 void MainDialog::onSliderValueChange(int value)
 {
-    sliderLabel->setText(QString::fromStdString(std::to_string(value)) + "s");
-
-    updateTimer(value);
-
-    auto config = *cfgHandler->getConfig();
-    config.timerValue = value;
-    cfgHandler->setConfig(config);
+    sliderChangeAction(value);
 }
 
-void MainDialog::updateTimer(int newValue)
+void MainDialog::setTimerTimeoutAction(std::function<void()> action)
 {
-    std::chrono::seconds timeInSeconds(newValue);
-    timer.setInterval(std::chrono::milliseconds(timeInSeconds));
+    timeoutAction = action;
+    connect(timer.get(), &QTimer::timeout, this, &MainDialog::onTimerTimeout);
 }
 
 void MainDialog::onTimerTimeout()
 {
-    mouseMover->jump();
+    timeoutAction();
 }
 
 void MainDialog::closeEvent(QCloseEvent *e)

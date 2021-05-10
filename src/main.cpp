@@ -1,17 +1,13 @@
-#include <QWidget>
 #include <QApplication>
-#include <QDialog>
-#include <QImageReader>
-#include <iostream>
 #include "configwriter.h"
-#include "mousehandler.h"
-#include "systemtrayicon.h"
 #include "confighandler.h"
+#include "mousehandler.h"
+#include "mousemover.h"
+#include "appguimanager.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QWidget w;
 
     ConfigWriter configWriter;
     ConfigHandler cfgHandler{&configWriter};
@@ -20,10 +16,8 @@ int main(int argc, char *argv[])
     MouseHandler mouseHandler;
     MouseMover mouseMover{&mouseHandler};
 
-    MainDialog mainDialog{&cfgHandler, &mouseMover};
-    SystemTrayIcon trayIcon(QIcon(":icons/icon.ico"), &w, &mainDialog);
-    trayIcon.show();
-    mainDialog.show();
+    AppGuiManager app{&cfgHandler, &mouseMover};
+    app.start();
 
     return a.exec();
 }

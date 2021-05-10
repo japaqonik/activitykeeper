@@ -1,49 +1,47 @@
 #include "systemtrayicon.h"
 #include <QMenu>
 
-SystemTrayIcon::SystemTrayIcon(const QIcon &icon, QWidget *parent, MainDialog * _mainDialog): QSystemTrayIcon(icon, parent), mainDialog(_mainDialog)
+SystemTrayIcon::SystemTrayIcon(QWidget *parent): QSystemTrayIcon{QIcon{":icons/icon.ico"}, parent}
 {
-    setToolTip("Cursor mover");
+    setToolTip("Activity keeper");
 
     auto menu = new QMenu(parent);
-    auto open_app = menu->addAction("Open");
-    connect(open_app, &QAction::triggered, this, &SystemTrayIcon::onOpen);
-
+    open = menu->addAction("Open");
     menu->addSeparator();
+    exit = menu->addAction("Exit");
 
-    auto exit = menu->addAction("Exit");
-
-    connect(exit, &QAction::triggered, this, &SystemTrayIcon::onExit);
-
-    connect(this, &QSystemTrayIcon::activated, this, &SystemTrayIcon::onTrayIconActivated);
-
-    this->setContextMenu(menu);
+    setContextMenu(menu);
 }
 
-void SystemTrayIcon::onExit()
+void SystemTrayIcon::setOnOpenAction(std::function<void ()> action)
 {
-    std::exit(0);
-}
-
-void SystemTrayIcon::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    if(reason == DoubleClick)
-    {
-        if(mainDialog->isVisible())
-        {
-            mainDialog->hide();
-        }
-        else
-        {
-            mainDialog->show();
-        }
-    }
+    onOpenAction = action;
+    connect(open, &QAction::triggered, this, &SystemTrayIcon::onOpen);
 }
 
 void SystemTrayIcon::onOpen()
 {
-    if(!mainDialog->isVisible())
-    {
-        mainDialog->show();
-    }
+    onOpenAction();
+}
+
+void SystemTrayIcon::setOnExitAction(std::function<void ()> action)
+{
+    onExitAction = action;
+    connect(exit, &QAction::triggered, this, &SystemTrayIcon::onExit);
+}
+
+void SystemTrayIcon::onExit()
+{
+    onExitAction();
+}
+
+void SystemTrayIcon::setOnTrayIconTriggeredAction(std::function<void (ActivationReason)> action)
+{
+    onTrayIconTriggeredAction = action;
+    connect(this, &QSystemTrayIcon::activated, this, &SystemTrayIcon::onTrayIconTriggered);
+}
+
+void SystemTrayIcon::onTrayIconTriggered(ActivationReason reason)
+{
+    onTrayIconTriggeredAction(reason);
 }

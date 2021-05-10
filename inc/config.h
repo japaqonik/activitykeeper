@@ -3,6 +3,7 @@
 
 struct Config{
     unsigned char enabled;
+    unsigned char shadowEnabled;
     unsigned short timerValue;
 };
 

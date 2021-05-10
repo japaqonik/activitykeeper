@@ -29,6 +29,7 @@ set(PROJECT_SOURCES
             inc/mousehandler.h
             inc/config.h
             inc/point.h
+            inc/appguimanager.h
 
             if/iconfigwriter.h
             if/imousehandler.h
@@ -42,6 +43,7 @@ set(PROJECT_SOURCES
             src/systemtrayicon.cpp
             src/configwriter.cpp
             src/mousehandler.cpp
+            src/appguimanager.cpp
 
             rsc/icon.qrc
 )
