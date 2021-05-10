@@ -33,6 +33,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.13.2
         with:
+          version: '6.1.0'
           host: windows
           arch: win64_mingw81
 
