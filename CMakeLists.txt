@@ -2,7 +2,19 @@ cmake_minimum_required(VERSION 3.5)
 
 project(activitykeeper LANGUAGES CXX)
 
+project(activitykeeper VERSION 0.5)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+include(InstallRequiredSystemLibraries)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+set(CPACK_PACKAGE_VERSION_MAJOR 0.1)
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "ActivityKeeper")
+set(CPACK_PACKAGE_EXECUTABLES activitykeeper;ActivityKeeper)
+set(CPACK_PACKAGE_VENDOR japaqonik)
+set(CPACK_NSIS_MUI_ICON ${CMAKE_CURRENT_SOURCE_DIR}/rsc/icon.ico)
+set(CPACK_NSIS_MUI_UNIICON ${CMAKE_CURRENT_SOURCE_DIR}/rsc/icon.ico)
+set(CPACK_NSIS_INSTALLED_ICON_NAME activitykeeper.exe)
+include(CPack)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -65,3 +77,5 @@ else()
 endif()
 
 target_link_libraries(activitykeeper PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+install(TARGETS activitykeeper DESTINATION .)
