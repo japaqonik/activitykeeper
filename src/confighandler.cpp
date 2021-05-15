@@ -3,7 +3,7 @@
 #include <cstring>
 #include "confighandler.h"
 
-ConfigHandler::ConfigHandler(IConfigWriter * _configWriter) : configWriter{_configWriter}
+ConfigHandler::ConfigHandler(IConfigStorage *_configWriter) : configWriter{_configWriter}
 {
     auto cfg = configWriter->readFromFile();
 
@@ -11,16 +11,6 @@ ConfigHandler::ConfigHandler(IConfigWriter * _configWriter) : configWriter{_conf
     {
         config = std::make_unique<Config>(*cfg);
     }
-}
-
-void ConfigHandler::importConfig()
-{
-
-}
-
-void ConfigHandler::saveConfig()
-{
-    configWriter->saveToFile(*config);
 }
 
 const Config *ConfigHandler::getConfig() const
@@ -35,5 +25,5 @@ void ConfigHandler::setConfig(const Config &_config)
         config = std::make_unique<Config>();
     }
     *config.get() = _config;
-    saveConfig();
+    configWriter->saveToFile(*config);
 }

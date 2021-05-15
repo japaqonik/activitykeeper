@@ -1,13 +1,13 @@
 #include "config.h"
 
-#ifndef ICONFIGWRITER_H
-#define ICONFIGWRITER_H
+#ifndef ICONFIGSTORAGE_H
+#define ICONFIGSTORAGE_H
 
-class IConfigWriter
+class IConfigStorage
 {
 public:
     virtual Config *readFromFile() = 0;
     virtual void saveToFile(Config& _config) = 0;
 };
 
-#endif // ICONFIGWRITER_H
+#endif // ICONFIGSTORAGE_H

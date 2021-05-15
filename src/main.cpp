@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "configwriter.h"
+#include "configstorage.h"
 #include "confighandler.h"
 #include "mousehandler.h"
 #include "mousemover.h"
@@ -9,9 +9,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    ConfigWriter configWriter;
-    ConfigHandler cfgHandler{&configWriter};
-    cfgHandler.importConfig();
+    ConfigStorage configStorage;
+    ConfigHandler cfgHandler{&configStorage};
 
     MouseHandler mouseHandler;
     MouseMover mouseMover{&mouseHandler};

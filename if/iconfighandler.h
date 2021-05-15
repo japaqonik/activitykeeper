@@ -6,7 +6,6 @@
 class IConfigHandler
 {
 public:
-    virtual void importConfig() = 0;
     virtual const Config* getConfig() const = 0;
     virtual void setConfig(const Config &_config) = 0;
 };

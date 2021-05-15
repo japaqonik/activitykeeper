@@ -1,15 +1,15 @@
-#include "iconfigwriter.h"
+#include "iconfigstorage.h"
 #include "binfilehandler.h"
 #include "config.h"
 
-#ifndef CONFIGWRITER_H
-#define CONFIGWRITER_H
+#ifndef CONFIGSTORAGE_H
+#define CONFIGSTORAGE_H
 
 
-class ConfigWriter : public IConfigWriter
+class ConfigStorage : public IConfigStorage
 {
 public:
-    ConfigWriter();
+    ConfigStorage();
     Config* readFromFile() override;
     void saveToFile(Config& _config) override;
 
@@ -17,4 +17,4 @@ private:
     BinFileHandler bFH;
 };
 
-#endif // CONFIGWRITER_H
+#endif // CONFIGSTORAGE_H
