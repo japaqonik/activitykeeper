@@ -64,7 +64,9 @@ else()
     )
 endif()
 
-if (${DEPLOY_BUILD} EQUAL true)
+message("-- Deploy build used: ${DEPLOY_BUILD}")
+
+if(DEPLOY_BUILD)
     target_link_libraries(activitykeeper PRIVATE -static Qt${QT_VERSION_MAJOR}::Widgets)
 
     include(InstallRequiredSystemLibraries)
